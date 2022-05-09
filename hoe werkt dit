@@ -1,0 +1,13 @@
+ik heb dit gevolgd
+
+https://blog.codecourse.com/setting-up-laravel-sanctum-airlock-for-spa-authentication-with-vue/
+
+opletten dat je laravel server als http://localhost:8000/ launched
+
+
+php artisan serve --host=localhost --port=8000
+
+fakery tutorial die werkt
+
+https://codersdrive.com/post/14481/fake-data-generator-laravel-7
+

@@ -1,0 +1,136 @@
+Dit project bestaat uit twee onderdelen een document viewer en een digitale handtekening/toestemmings module.
+
+Document viewer:
+
+Een begeleider kan op een webpage clienten aanmaken en in elk mapje documenten plaatsen die relevant zijn voor deze clienten. De clienten kunnen via een webpage deze documenten downloaden.
+
+Digitale handtekening:
+
+Als een begeleider een document wil versturen naar een derde partij (UWV, gemeente etc) moet de client hier toestemming voor geven. Dit wil de wil een begeleider digitaal doen. De begeleider klikt hiervoor een document aan waarvoor hij toestemming wil hebben. Dan vult hij in naar wie hij dit wilt versturen email en een onderwerp waarom hij dit wil versturen. Deze aanvraag van toestemming komt dan in de webportal van de client terecht. Waar de persoon dan vervolgens ziet om welk document het gaat, email adres en de reden waarom het verstuurd dient te worden. De client kan dit dan accepteren of niet. Deze acceptatie wordt dan verstuurd naar de webportal van de begeleider.
+
+Eerste instantie KISS houden. Keep it simple stupid.
+
+Acties document viewer:
+
+Aanmelden client flow:
+
+Er komt een nieuwe client in de dagbesteding. Deze client maakt een account aan op de webportal. Daar krijgt de begeleider een melding van. Aan de hand van deze melding kan de begeleider een documenten map aanmaken voor deze client. Nu zijn deze map en deze client aan elkaar gelinkt.
+
+Begeleider file upload:
+
+De begeleider logt in op het admin gedeelte van de webportal. Hier kan hij in searchable index zoeken naar de juiste client en vervolgens documenten uploaden.
+
+Client is wachtwoord vergeten:
+
+Wachtwoord vergeten link sturen, vervolgens wachtwoord updaten naar het nieuwe wachtwoord.
+
+Client is wachtwoord en gebruikersnaam vergeten:
+
+De client kan de begeleider vragen naar zijn wachtwoord.
+
+Begeleider is wachtwoord vergeten:
+
+Handmatig in de database zijn wachtwoord resetten.
+
+Client file download:
+
+Client kan in de webportal zijn documenten downloaden.
+
+
+Pseudocode:
+
+client pages:
+
+create an account, reset password link, download page, change account data (email, name, password)
+
+Begeleider page:
+
+searchable client page, client document page with upload field.
+
+Frontend bits:
+
+admin clients page:
+
+-check for is logged in user has admin rights.
+
+-return list of users → clientController@index → paginated results of non admin users → make scroll page →data to return firstname,lastname, email. (in v2, small overview of files to download for this user, small upload box) → get paginated(route /clients)
+-search box → clientController@search → search user table for name → return the results → make scroll page →data to return firstname,lastname, email. (in v2, small overview of files to download for this user, small upload box) → get paginated(route /clientssearch)
+
+admin client document page:
+
+-get user data → route(/clients/id) → get all user entry - > return user data.
+-get document data → get route(documents/ id = userId) → DocumentController@show → get all user associated documents → return document list.
+- search document names → get route(documentsearch/id=userId)
+-Upload new documents - > foreach document post route(documents, userId → DocumentController@store → check for name duplication if name duplicaiton add plus one behind filename → return this error to begeleider.
+
+-change filename→ DocumentController@update → update filename.
+-delete file → Document@destroy → destory/remove file.
+
+Client document page:
+
+-get user data → route(/clients/id) → get all user entry - > return user data.
+-get document data → get route(documents/ id = userId) → DocumentController@show → get all user associated documents → return document list.
+
+Client login page:
+
+-create account page → post
+
+
+
+
+
+
+Routes:
+
+--ClientController--
+
+index (get /clients): ClientController@index → paginated users list → UserIndexResource (id, firstname,lastname, email, no password) ← check if admin
+
+show(get /clients/{id}): ClientController@show → get user data → UserShowResource(id, firstname, lastname, email, no password) ← check if admin/same id
+
+store(post /clients): ClientController@store → validate and new user set is_admin to no → return 404 if created succesfully if not return validation errors
+
+update(put /clients/{id}) →ClientController@update password reset link naar email sturen - > update password – return 404 or errors
+
+destroy(delete /clients/{id}) → ClientController@delete → check if user is admin if not do nothing else delete user plus documents. → return ok status or validation errors ← check if admin
+
+search(get clients/search/{searchstring}) → ClientController@search → search for client firstname, lastname, email → check if admin
+
+--DocuementController--
+
+index( get /documents/{userid}) - >DocumentController@index →get all documents of user, check auth or is_admin→ return all data.
+
+store( post documents/{userid}/ → DocumentController@store - > check if admin → check if names are not conflicting → if conflicting change name and save the files. Promp admin that filenames have been changed
+
+update(put document/{documentId}) →DocumentController@update → check if filename is not duplicated. → promp user filename cannot be the same
+
+destroy(put /document/{documentId }) → DocumentController@delete → delete the file.
+
+Models: Document, Client
+Migration: create_documents_table: id,created updated, filepath, filename, user_id
+Migration: create_clients_table: id, created,updated, firstname, lastname, password, email.
+Seeder: ClientSeeder user fakery for firstname, lastname, password = password and email, create for each user a new folder firstname,lastname, unique string.
+Seeder: DocumentSeeder get 10 different documents and add to each client. client_id, id, created, updated, filename
+
+
+
+
+
+
+
+Verb          Path                        Action  Route Name
+GET           /users                      index   users.index
+POST          /users                      store   users.store
+GET           /users/{user}               show    users.show
+PUT|PATCH     /users/{user}               update  users.update
+DELETE        /users/{user}               destroy users.destroy
+
+
+databases:
+
+users,
+documents → user one to may to documents/ because user can have more than one document.
+
+
+Vervolg heb meerdere mappen.
+
