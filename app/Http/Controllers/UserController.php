@@ -5,11 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 // use Illuminate\Validation\Validator;
 
 class UserController extends Controller
 {
+
+    public function index(){
+        error_log("index called");
+        return User::all();
+    }
+
+    public function search($searchterm){
+        error_log("usercontroller search called ".$searchterm);
+        $users = User::where('firstname', 'LIKE', '%'.$searchterm.'%')->get();
+        error_log(json_encode($users));
+        // Log::info(print_r($users, true));
+        return $users;
+
+
+    }
+
     public function signup(Request $request)
     {
         error_log("signup function called");
@@ -36,9 +54,22 @@ class UserController extends Controller
             error_log("validator failed");
             return response()->json(['error' => $validator->errors()]);
         }else{
+            error_log("dit werkt");
+            User::create([
+                'firstname' => $request->input('firstname'),
+                'lastname' => $request->input('lastname'),
+
+                'email' => $request->input('email'),
+                'password' => bcrypt(   $request->   input('password')),
+                'is_admin'=>False,
+            ]);
+            error_log("made new user");
+
+
+
+
               return response()->json([
             'worked' => "yes",
-            // 'token' => $user->createToken('bigStore')->accessToken,
         ]);
         }
 

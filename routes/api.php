@@ -39,6 +39,9 @@ Route::post('downloadtxt','DocumentController@downloadtxt');
 Route::get('downloadpdf/{id}','DocumentController@downloadpdf');
 Route::get('downloadworksttttt/{id}','DocumentController@downloadworks');
 Route::post('signup','UserController@signup');
+Route::get('users','UserController@index');
+Route::get('searchuser/{searchTerm}','Usercontroller@search');
+
 
 
 
