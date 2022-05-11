@@ -42,6 +42,7 @@ Route::post('signup','UserController@signup');
 Route::get('users','UserController@index');
 Route::get('searchuser/{searchTerm}','Usercontroller@search');
 
+Route::post('/upload', 'FileController@upload');
 
 
 
