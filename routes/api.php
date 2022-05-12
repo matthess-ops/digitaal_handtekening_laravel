@@ -25,6 +25,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 });
 
+Route::get("unprotected",'TestController@unprotected');
+Route::get("unprotectedpost",'TestController@unprotectedpost');
+
 Route::post('test','UserController@test');
 
 
