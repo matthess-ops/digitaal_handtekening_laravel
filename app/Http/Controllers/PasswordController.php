@@ -21,13 +21,15 @@ class PasswordController extends Controller
         ]);
 
         if ($validator->fails()) {
-            error_log("validator failed");
-            return response()->json(['error' => $validator->errors()]);
+            return response()->json([
+                'status'        => 'failed',
+                'message' =>   'Enter email adress'
+            ]);
         } else {
-            error_log("check if mail exists");
             $userEmail = $request->input("email");
             $user =  User::where('email', $userEmail)->first();
-            error_log("user is ". json_encode($user));
+            error_log(json_encode($user));
+
             if ($user) {
 
                 $credentials = ['email' => $user->email];
@@ -38,7 +40,6 @@ class PasswordController extends Controller
                         return response()->json([
                             'status'        => 'success',
                             'message' => 'Password reset link send into mail.',
-                            'data' => ''
                         ]);
                     case Password::INVALID_USER:
                         return response()->json([
@@ -46,16 +47,12 @@ class PasswordController extends Controller
                             'message' =>   'Unable to send password reset link.'
                         ]);
                 }
-            }else{
-                error_log("user does noet exist");
-                // return "user does not exist";
+            } else {
                 return response()->json([
                     'status'        => 'failed',
                     'message' =>   'user detail not found!'
-                ],201);
-
+                ]);
             }
-
         }
     }
 }

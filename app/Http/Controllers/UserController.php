@@ -12,20 +12,58 @@ use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
+    // only admins should be able to call this function
+    // check for auth is_admin is fture
+    public function index()
+    {
+        error_log("usercontroller index called");
+        $checkAdmin = auth('sanctum')->user()->is_admin;
+        error_log("is admin " . $checkAdmin);
+        if ($checkAdmin == true) {
+            error_log("user is admin");
+            $users = User::where('is_admin', 'like', false)->orderBy('firstname')->paginate(25);
+            error_log("num of found users " . count($users));
+            return response()->json([
+                'status'        => 'success',
+                'data' =>   $users,
+            ]);
+        } else {
+            return response()->json([
+                'status'        => 'unauthorized',
 
-    public function index(){
-        error_log("index called");
-        return User::all();
+            ]);
+        }
     }
 
-    public function search($searchterm){
-        error_log("usercontroller search called ".$searchterm);
-        $users = User::where('firstname', 'LIKE', '%'.$searchterm.'%')->get();
-        error_log(json_encode($users));
-        // Log::info(print_r($users, true));
-        return $users;
+    public function search($searchterm)
+    {
+
+        error_log("usercontroller index called");
+        $checkAdmin = auth('sanctum')->user()->is_admin;
+        error_log("is admin " . $checkAdmin);
+        if ($checkAdmin == true) {
+            error_log("user is admin");
+            $users = User::where('firstname', 'LIKE', '%' . $searchterm . '%')->orderBy('firstname')->get();
+            error_log("num of found users " . count($users));
+            return response()->json([
+                'status'        => 'success',
+                'data' =>   $users,
+            ]);
+        } else {
+            return response()->json([
+                'status'        => 'unauthorized',
+
+            ]);
+        }
 
 
+
+
+
+        // error_log("usercontroller search called " . $searchterm);
+        // $users = User::where('firstname', 'LIKE', '%' . $searchterm . '%')->get();
+        // error_log(json_encode($users));
+        // return $users;
     }
 
     public function signup(Request $request)
@@ -47,30 +85,30 @@ class UserController extends Controller
             'firstname' => 'required',
             'lastname' => 'required',
             'email' => 'required|email|unique:users,email',  //
-            'password'=>'required'
+            'password' => 'required'
         ]);
 
         if ($validator->fails()) {
             error_log("validator failed");
             return response()->json(['error' => $validator->errors()]);
-        }else{
+        } else {
             error_log("dit werkt");
             User::create([
                 'firstname' => $request->input('firstname'),
                 'lastname' => $request->input('lastname'),
 
                 'email' => $request->input('email'),
-                'password' => bcrypt(   $request->   input('password')),
-                'is_admin'=>False,
+                'password' => bcrypt($request->input('password')),
+                'is_admin' => False,
             ]);
             error_log("made new user");
 
 
 
 
-              return response()->json([
-            'worked' => "yes",
-        ]);
+            return response()->json([
+                'worked' => "yes",
+            ]);
         }
 
 
@@ -87,9 +125,11 @@ class UserController extends Controller
         // ]);
     }
 
-    public function test(Request $request){
+    public function test(Request $request)
+    {
         error_log("route is accesed");
         return response()->json([
-            'worked' => "yes",]);
+            'worked' => "yes",
+        ]);
     }
 }
