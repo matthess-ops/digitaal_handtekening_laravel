@@ -21,7 +21,7 @@ class UserController extends Controller
         error_log("is admin " . $checkAdmin);
         if ($checkAdmin == true) {
             error_log("user is admin");
-            $users = User::where('is_admin', 'like', false)->orderBy('firstname')->paginate(25);
+            $users = User::where('is_admin', 'like', false)->orderBy('firstname')->paginate(40);
             error_log("num of found users " . count($users));
             return response()->json([
                 'status'        => 'success',

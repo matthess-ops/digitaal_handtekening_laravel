@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Storage;
 use App\Document;
-
+use Error;
 
 class DocumentController extends Controller
 {
@@ -21,6 +21,17 @@ class DocumentController extends Controller
         $user = User::find(auth('sanctum')->user()->id);
         $documents = $user->documents;
         return $documents;
+    }
+
+    public function show($id){
+        error_log("werkt dit");
+        error_log("documentcontroller show called with userid ".$id);
+        $user = User::find($id);
+        $documents = $user->documents;
+        return $documents;
+        // error_log(json_encode($user));
+        // error_log(json_encode($documents));
+
     }
 
     public function downloadtest()
@@ -60,9 +71,7 @@ class DocumentController extends Controller
     // return user data
     // user ClientShowResource
     // for all users
-    public function show($id)
-    {
-    }
+
     // validate and store a new user
     // return response 200 succesfull else return validation errors
     public function store(Request $request)
