@@ -41,6 +41,11 @@ Route::post('test','UserController@test');
 // Route::delete('clients/{id}', 'ClientController@delete');
 // Route::get('clients/search/{id}', 'ClientController@search');
 
+Route::get('downloadfile/{id}','DocumentController@downloadFile');
+Route::delete('document/{id}','DocumentController@destroy');
+
+
+
 Route::post('downloadtxt','DocumentController@downloadtxt');
 Route::get('downloadpdf/{id}','DocumentController@downloadpdf');
 Route::get('downloadworksttttt/{id}','DocumentController@downloadworks');

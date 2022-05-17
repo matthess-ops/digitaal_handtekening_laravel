@@ -29,11 +29,11 @@ class FileController extends Controller
             $newDocument->save();
 
 
-            // $fileUpload->name = time().'_'.$request->file->getClientOriginalName();
-            // $fileUpload->path = '/storage/' . $file_path;
-            // $fileUpload->save();
 
-            return response()->json(['success'=>'File uploaded successfully.']);
-        }
+
+            return response()->json([
+                'status'        => 'success',
+                'data' =>   $newDocument,
+            ]);        }
    }
 }

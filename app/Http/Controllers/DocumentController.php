@@ -7,6 +7,8 @@ use App\User;
 use Illuminate\Support\Facades\Storage;
 use App\Document;
 use Error;
+use Symfony\Component\HttpFoundation\File\File;
+
 
 class DocumentController extends Controller
 {
@@ -29,36 +31,51 @@ class DocumentController extends Controller
         $user = User::find($id);
         $documents = $user->documents;
         return $documents;
-        // error_log(json_encode($user));
-        // error_log(json_encode($documents));
+
 
     }
 
-    public function downloadtest()
-    {
-        error_log("test fucntion called");
-        $path = public_path() . '/testimage.png'; //werkt
-        // $path = public_path() . '/test.pdf'; //werkt
-        // $path = 'C:\Users\matthijn\Desktop\documenten\boiler-plate-laravel-sanctum-main\public\test.pdf';
-        error_log("lfuck " . $path);
-        return response()->download($path);
-    }
+    // public function downloadtest()
+    // {
+    //     error_log("test fucntion called");
+    //     $path = public_path() . '/testimage.png'; //werkt
+    //     // $path = public_path() . '/test.pdf'; //werkt
+    //     // $path = 'C:\Users\matthijn\Desktop\documenten\boiler-plate-laravel-sanctum-main\public\test.pdf';
+    //     error_log("lfuck " . $path);
+    //     return response()->download($path);
+    // }
 
-    public function downloadworks($id)
-    {
-        error_log("download file function called id =" . $id);
+    // public function downloadworks($id)
+    // {
+    //     error_log("download file function called id =" . $id);
+    //     $file = Document::find($id);
+    //     //   error_log(print_r($file,true));
+    //     $path = storage_path() . "\\app\\public\\documents\\" . $file["filename"];
+    //     $filemimetype = Storage::mimeType("\\public\\documents\\" . $file["filename"]);    //   error_log("mimeytype ".$mimeType);
+    //     // error_log($mimetype);
+    //     // error_log($path);
+    //       $headers = [
+    //         'Content-Type' => $filemimetype,
+    //     ];
+    //     error_log("donwload file ".$file["filename"] ." mimetype ".$filemimetype);
+    //     return response()->download($path, $file["filename"]);
+    // }
+
+
+    public function downloadFile($id){
+        error_log("downloadFile function called =" . $id);
         $file = Document::find($id);
-        //   error_log(print_r($file,true));
         $path = storage_path() . "\\app\\public\\documents\\" . $file["filename"];
         $filemimetype = Storage::mimeType("\\public\\documents\\" . $file["filename"]);    //   error_log("mimeytype ".$mimeType);
-        // error_log($mimetype);
-        // error_log($path);
+
           $headers = [
             'Content-Type' => $filemimetype,
         ];
-        error_log("donwload file ".$file["filename"] ." mimetype ".$filemimetype);
+        error_log("downloading file ".$file["filename"] ." mimetype ".$filemimetype);
         return response()->download($path, $file["filename"]);
+
     }
+
 
     // public function download()
     // {
@@ -92,6 +109,16 @@ class DocumentController extends Controller
     //seend response 200 or error
     public function destroy($id)
     {
+        error_log("destory documentController function called =" . $id);
+        $file = Document::find($id);
+        $path = storage_path() . "\\app\\public\\documents\\" . $file["filename"];
+        unlink($path); // dont want to delete test files during development
+        $file ->delete();
+        return response()->json([
+            'status'        => 'success',
+            'message' =>   'succesfull deleted file',
+        ]);
+
     }
 
     // search firstname and secondname column for matches
