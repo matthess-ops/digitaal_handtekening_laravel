@@ -24,66 +24,99 @@ class DocumentController extends Controller
         $documents = $user->documents;
         return $documents;
     }
+    public function userDocument($userid,$documentid){
+        error_log("userdocument function in documentcontroller called");
+        error_log($userid." ".$documentid);
+        $user = User::find($userid);
+        $document = Document::find($documentid);
+        $admin = User::find(auth('sanctum')->user()->id);
+        return response()->json([
+            'status'        => 'success',
+            'user'=>$user,
+            'document'=>$document,
+            'admin'=>$admin,
 
-    public function show($id){
-        error_log("werkt dit");
-        error_log("documentcontroller show called with userid ".$id);
-        $user = User::find($id);
-        $documents = $user->documents;
-        return $documents;
-
-
+        ]);
     }
 
-    // public function downloadtest()
-    // {
-    //     error_log("test fucntion called");
-    //     $path = public_path() . '/testimage.png'; //werkt
-    //     // $path = public_path() . '/test.pdf'; //werkt
-    //     // $path = 'C:\Users\matthijn\Desktop\documenten\boiler-plate-laravel-sanctum-main\public\test.pdf';
-    //     error_log("lfuck " . $path);
-    //     return response()->download($path);
-    // }
+    public function upload(Request $request)
+    {
 
-    // public function downloadworks($id)
-    // {
-    //     error_log("download file function called id =" . $id);
-    //     $file = Document::find($id);
-    //     //   error_log(print_r($file,true));
-    //     $path = storage_path() . "\\app\\public\\documents\\" . $file["filename"];
-    //     $filemimetype = Storage::mimeType("\\public\\documents\\" . $file["filename"]);    //   error_log("mimeytype ".$mimeType);
-    //     // error_log($mimetype);
-    //     // error_log($path);
-    //       $headers = [
-    //         'Content-Type' => $filemimetype,
-    //     ];
-    //     error_log("donwload file ".$file["filename"] ." mimetype ".$filemimetype);
-    //     return response()->download($path, $file["filename"]);
-    // }
+        $request->validate([
+            'file' => 'required'
+        ]);
+
+        error_log("user id is " . $request->input('userId'));
+        $newDocument = new Document;
+
+        if ($request->file()) {
+            $file_name = time() . '_' . $request->file->getClientOriginalName();
+            $file_path = $request->file('file')->storeAs('documents', $file_name, 'public');
+            $pathToSave = "storage\app\public\\" . $file_path;
+            error_log($file_name);
+            error_log($file_path);
+            error_log($pathToSave);
+            $newDocument->user_id = $request->input('userId');
+            $newDocument->filepath = $pathToSave;
+            $newDocument->filename = $file_name;
+            $newDocument->save();
+            return response()->json([
+                'status'        => 'success',
+                'data' =>   $newDocument,
+            ]);
+        }
+    }
 
 
-    public function downloadFile($id){
+    public function userDocuments()
+    {
+        error_log("documentController@getdocuments called");
+        error_log("user id " . auth('sanctum')->user()->id);
+        $user = User::find(auth('sanctum')->user()->id);
+        $documents = $user->documents;
+        return $documents;
+    }
+
+    public function adminGetUserDocuments($id)
+    {
+        error_log("werkt dit");
+        error_log("documentcontroller show called with userid " . $id);
+        $user = User::find($id);
+        if ($user != null) {
+            $documents = User::find($id)->documents; // have to use User::find because when using $user you will also get the document data
+            return response()->json([
+                'status'        => 'success',
+                'user' => $user,
+                'documents' => $documents,
+
+            ]);
+        }
+
+        return response()->json([
+            'status'        => 'failed',
+            'message' => "Gebruiker is niet gevonden",
+
+        ]);
+    }
+
+
+
+
+    public function download($id)
+    {
         error_log("downloadFile function called =" . $id);
         $file = Document::find($id);
         $path = storage_path() . "\\app\\public\\documents\\" . $file["filename"];
         $filemimetype = Storage::mimeType("\\public\\documents\\" . $file["filename"]);    //   error_log("mimeytype ".$mimeType);
 
-          $headers = [
+        $headers = [
             'Content-Type' => $filemimetype,
         ];
-        error_log("downloading file ".$file["filename"] ." mimetype ".$filemimetype);
+        error_log("downloading file " . $file["filename"] . " mimetype " . $filemimetype);
         return response()->download($path, $file["filename"]);
-
     }
 
 
-    // public function download()
-    // {
-
-    //     $path = public_path() . '/testimage.png'; //werkt
-    //     error_log("dit werkt ".$path);
-    //     return response()->download($path);
-    // }
 
     // return user data
     // user ClientShowResource
@@ -113,12 +146,11 @@ class DocumentController extends Controller
         $file = Document::find($id);
         $path = storage_path() . "\\app\\public\\documents\\" . $file["filename"];
         unlink($path); // dont want to delete test files during development
-        $file ->delete();
+        $file->delete();
         return response()->json([
             'status'        => 'success',
             'message' =>   'succesfull deleted file',
         ]);
-
     }
 
     // search firstname and secondname column for matches

@@ -15,7 +15,6 @@ class PasswordController extends Controller
 {
     public function reset(Request $request)
     {
-        error_log("reset password called");
         $validator = Validator::make($request->all(), [
             'email' => 'required:email',
         ]);
@@ -28,7 +27,6 @@ class PasswordController extends Controller
         } else {
             $userEmail = $request->input("email");
             $user =  User::where('email', $userEmail)->first();
-            error_log(json_encode($user));
 
             if ($user) {
 

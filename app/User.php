@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Document;
+use App\Signature;
 
 
 class User extends Authenticatable
@@ -42,5 +43,10 @@ class User extends Authenticatable
     public function documents()
     {
         return $this->hasMany(Document::class);
+    }
+
+    public function signatures()
+    {
+        return $this->hasMany(Signature::class);
     }
 }

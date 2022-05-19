@@ -73,12 +73,7 @@ class UserController extends Controller
         $firstname = $request->input('firstname');
         error_log($firstname);
 
-        // $request->validate([
-        //     'firstname' => 'required',
-        //     'lastname' => 'required',
-        //     'email' => 'required|email|unique:users,email',
-        //     'password'=>'required'
-        // ]);
+
 
 
         $validator = Validator::make($request->all(), [
@@ -90,7 +85,11 @@ class UserController extends Controller
 
         if ($validator->fails()) {
             error_log("validator failed");
-            return response()->json(['error' => $validator->errors()]);
+            // return response()->json(['error' => $validator->errors()]);
+            return response()->json([
+                'status'        => 'failed',
+                'errors' =>  $validator->errors(),
+            ]);
         } else {
             error_log("dit werkt");
             User::create([
@@ -106,8 +105,11 @@ class UserController extends Controller
 
 
 
+            // return response()->json([
+            //     'worked' => "yes",
+            // ]);
             return response()->json([
-                'worked' => "yes",
+                'status'        => 'success',
             ]);
         }
 

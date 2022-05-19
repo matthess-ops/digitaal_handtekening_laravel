@@ -27,10 +27,6 @@ class FileController extends Controller
             $newDocument->filepath =$pathToSave;
             $newDocument->filename =$file_name;
             $newDocument->save();
-
-
-
-
             return response()->json([
                 'status'        => 'success',
                 'data' =>   $newDocument,
