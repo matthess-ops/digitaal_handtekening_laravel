@@ -36,6 +36,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::post('signup','SignupController@signup');
 Route::post('resetpassword', 'PasswordController@reset');
 
+Route::post('createsigning','SignatureController@create');
+
+Route::get('adminsigneddocuments','SignatureController@index');
+
+Route::get('usersigneddocuments','SignatureController@userIndex');
+
+Route::post('changestatus', 'SignatureController@changeStatus');
+
+
+
+
+// Route::get('/testdb', 'TestController@testdb');
+
 
 
 

@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Validator;
 
 class SignupController extends Controller
 {
+
+
+
     public function signup(Request $request)
     {
 

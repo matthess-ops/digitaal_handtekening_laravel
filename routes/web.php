@@ -40,3 +40,4 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 // Route::get('/testrel', 'TestrelController@index');
+Route::get('/testdb', 'TestController@testdb');

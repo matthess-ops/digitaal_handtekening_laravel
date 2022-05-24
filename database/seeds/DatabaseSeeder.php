@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
 
         $this->call(DocumentSeeder::class);
-        $this->call(SignatureSeeder::class);
+        // $this->call(SignatureSeeder::class);
 
 
 

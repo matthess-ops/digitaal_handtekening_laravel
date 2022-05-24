@@ -16,6 +16,7 @@ class CreateSignaturesTable extends Migration
         Schema::create('signatures', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+
             $table->timestamp('signed_at')->nullable();
 
             $table->string('user_id');
@@ -25,6 +26,8 @@ class CreateSignaturesTable extends Migration
             $table->string('send_to');
             $table->string('applicant');
             $table->string('text');
+
+
 
 
         });
