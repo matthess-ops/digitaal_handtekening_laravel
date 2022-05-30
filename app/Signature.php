@@ -8,7 +8,7 @@ use App\User;
 class Signature extends Model
 {
     protected $fillable = [
-        'signed_at', 'user_id', 'filepath', 'filename', 'email', 'dummy', 'created_at', 'updated_at', 'signed_status', 'send_to', 'applicant', 'text'
+        'signed_at', 'user_id', 'filepath', 'filename', 'email', 'dummy', 'created_at', 'updated_at', 'signed_status', 'send_to', 'applicant', 'text','document_id'
     ];
 
     public function user()

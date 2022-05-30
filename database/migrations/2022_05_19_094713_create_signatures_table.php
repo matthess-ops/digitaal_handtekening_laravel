@@ -26,6 +26,7 @@ class CreateSignaturesTable extends Migration
             $table->string('send_to');
             $table->string('applicant');
             $table->string('text');
+            $table->string('document_id');
 
 
 

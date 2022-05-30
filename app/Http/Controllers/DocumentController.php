@@ -84,10 +84,13 @@ class DocumentController extends Controller
         $user = User::find($id);
         if ($user != null) {
             $documents = User::find($id)->documents; // have to use User::find because when using $user you will also get the document data
+            $signatures = User::find($id)->signatures; // have to use User::find because when using $user you will also get the document data
+
             return response()->json([
                 'status'        => 'success',
                 'user' => $user,
                 'documents' => $documents,
+                'signatures'=>$signatures,
 
             ]);
         }

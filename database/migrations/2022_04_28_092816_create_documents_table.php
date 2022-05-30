@@ -20,7 +20,7 @@ class CreateDocumentsTable extends Migration
             $table->string('user_id');
             $table->string('filepath');
             $table->string('filename');
-
+            $table->string('signature_id')->nullable();
         });
     }
 

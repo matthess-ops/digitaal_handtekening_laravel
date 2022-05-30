@@ -2,56 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\User;
-use Illuminate\Support\Facades\Validator;
-use App\Signature;
-use Illuminate\Support\Facades\Storage;
 use App\Document;
+use App\Signature;
+use App\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use App\Test;
-
-
+use Illuminate\Support\Facades\Validator;
 
 class SignatureController extends Controller
 {
+    // downloads the signed document.
+    public function downloadSigned($id)
+    {
+        $file = Signature::find($id);
+        $path = $file["filepath"];
+        $filemimetype = File::mimeType($file["filepath"]);
 
+        $headers = [
+            'Content-Type' => $filemimetype,
+        ];
+        error_log("downloading file " . $file["filename"] . " mimetype " . $filemimetype);
+        return response()->download($path, $file["filename"]);
+    }
+    // change the status of a signed document (open, not_agreed, signed)
+    // see changesv2.md for more information
     public function changeStatus(Request $request)
     {
         $signedDocumentId = $request->input("id");
         $newStatus = $request->input("newStatus");
         $userId = auth('sanctum')->user()->id;
         $signedDocument = Signature::find($signedDocumentId);
-        if ($signedDocument->user_id == $userId) {
-            error_log("the same user");
+        if ($signedDocument->user_id == $userId) { // check if the user sending the request is the owner of the document
             $signedDocument->signed_status = $newStatus;
             $signedDocument->save();
-            error_log("everything worked");
             return response()->json([
-                'status'        => 'success',
-                'data'=>$signedDocument->id,
+                'status' => 'success',
+                'data' => $signedDocument->id,
             ]);
         } else {
             return response()->json([
-                'status'        => 'failure',
+                'status' => 'failure',
             ]);
         }
-        error_log("change status is called");
-        error_log(json_encode($request->all()));
-    }
 
+    }
+    //return all signed documents belonging to this user
     public function userIndex()
     {
-        error_log("userindex function called");
         $userId = auth('sanctum')->user()->id;
-        error_log($userId);
         try {
             $userSignatures = User::find($userId)->signatures;
-            error_log($userSignatures);
             return response()->json([
-                'status'        => 'success',
-                'data' =>  $userSignatures,
+                'status' => 'success',
+                'data' => $userSignatures,
             ]);
         } catch (\Exception $e) {
 
@@ -59,17 +63,20 @@ class SignatureController extends Controller
             return $e->getMessage();
         }
     }
-
+    // get all all currenlty signed documents.
+    // v2 should only be accesible by an admin
     public function index()
     {
-        error_log("signatureController@index called");
 
         try {
-            $signedDocuments = Signature::with('user')->get();
-            return response()->json([
-                'status'        => 'success',
-                'data' => $signedDocuments,
-            ]);
+            $checkAdmin = auth('sanctum')->user()->is_admin;
+            if ($checkAdmin == true) {
+                $signedDocuments = Signature::with('user')->get();
+                return response()->json([
+                    'status' => 'success',
+                    'data' => $signedDocuments,
+                ]);
+            }
         } catch (\Exception $e) {
 
             error_log($e->getMessage());
@@ -77,19 +84,11 @@ class SignatureController extends Controller
         }
     }
 
-
-
-
+    // create a new signature db entry. Also copy the document to be signed to
+    // signatureDocuments folder. This is needed becuase these documents need to be saved
+    // in case if there is a conflict between user and admin in the future.
     public function create(Request $request)
     {
-
-        error_log(
-            "create function called signupcontroller"
-        );
-
-
-
-        error_log(json_encode($request->all()));
 
         $validator = Validator::make($request->all(), [
             'sendTo' => 'required|email',
@@ -98,25 +97,22 @@ class SignatureController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'status'        => 'failed',
-                'errors' =>  $validator->errors(),
+                'status' => 'failed',
+                'errors' => $validator->errors(),
             ]);
         } else {
 
+            // find the document of interest to be saved in deh signature documents folder
             $file = Document::find($request->input('documentId'));
             $path = storage_path() . "\\app\\public\\documents\\" . $file["filename"];
             $copyToPath = storage_path() . "\\app\\public\\signatureDocuments\\" . time() . '_' . $file["filename"];
-            error_log($path);
-            error_log("copy file");
+
             File::copy($path, $copyToPath);
-
-            error_log("werkt tot hier");
-
 
             try {
 
-                Signature::create([
-                    'signed_at' => null,
+                $newSig = Signature::create([
+                    'signed_at' => null, // since the document is not signed by the user in the beginning set this to null
                     'user_id' => $request->input('userId'),
                     'filepath' => $copyToPath,
                     'filename' => $file["filename"],
@@ -126,9 +122,12 @@ class SignatureController extends Controller
                     'send_to' => $request->input('sendTo'),
                     'applicant' => $request->input('applicant'),
                     'text' => $request->input('text'),
-
+                    'document_id' => $request->input('documentId'),
 
                 ]);
+
+                $file->signature_id = $newSig->id; // change the document signature_id to the newly created signature documet id
+                $file->save();
             } catch (\Exception $e) {
 
                 error_log($e->getMessage());
@@ -136,11 +135,8 @@ class SignatureController extends Controller
             }
 
 
-
-            error_log("dit werkt niet meer");
-
             return response()->json([
-                'status'        => 'success',
+                'status' => 'success',
             ]);
         }
     }

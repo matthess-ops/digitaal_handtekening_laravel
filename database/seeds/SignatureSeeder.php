@@ -16,27 +16,12 @@ class SignatureSeeder extends Seeder
      *
      */
 
-    // $table->id();
-    // $table->timestamps();
-    // $table->timestamp('signed_at');
-
-    // $table->string('user_id');
-    // $table->string('filepath');
-    // $table->string('filename');
-    // $table->boolean('signed');
-    // $table->boolean('agreed');
-    // $table->string('send_to');
-    // $table->string('applicant');
-    // $table->string('text');
-
-
+    // creates the signatures db entries.
+    // creates for all the documents in the signatureDocuments for each user
+    // and signature entry in the db. Each entry has an random signed status (signed, open, not_agreed)
     public function run()
     {
-        error_log("run signature seeder");
         $files = glob('storage\app\public\signatureDocuments\*');
-        error_log(print_r($files, true));
-        $splitted = explode("/", $files[0]);
-        error_log(end($splitted));
 
         $users = User::all();
 
@@ -62,18 +47,6 @@ class SignatureSeeder extends Seeder
                     'send_to' => "test@example.nl",
                     'applicant' => "ymko",
                     'text' => "Ik wil dit document naar de gemeente opsturen."
-
-                       // $table->timestamp('signed_at');
-
-    // $table->string('user_id');
-    // $table->string('filepath');
-    // $table->string('filename');
-    // $table->boolean('signed');
-    // $table->boolean('agreed');
-    // $table->string('send_to');
-    // $table->string('applicant');
-    // $table->string('text');
-
                 ]);
             }
         }

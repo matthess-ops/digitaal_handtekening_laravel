@@ -10,14 +10,14 @@ class SignupController extends Controller
 {
 
 
-
+    //sign up function
     public function signup(Request $request)
     {
 
         $validator = Validator::make($request->all(), [
             'firstname' => 'required',
             'lastname' => 'required',
-            'email' => 'required|email|unique:users,email',  //
+            'email' => 'required|email|unique:users,email',
             'password' => 'required'
         ]);
 
@@ -39,6 +39,5 @@ class SignupController extends Controller
                 'status'        => 'success',
             ]);
         }
-
     }
 }

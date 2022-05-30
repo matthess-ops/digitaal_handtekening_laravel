@@ -10,6 +10,9 @@ class DatabaseSeeder extends Seeder
      *
      * @return void
      */
+    // calls user seeder before document seeder because
+    // document seeder uses the users table. The same for signature seeder
+    // it uses the documents table in the signature seeder
     public function run()
     {
         $this->call(UserSeeder::class);

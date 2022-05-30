@@ -6,6 +6,7 @@ use App\Test;
 use App\User;
 use Illuminate\Http\Request;
 use App\Signature;
+use App\Document;
 
 class TestController extends Controller
 {
@@ -50,5 +51,15 @@ class TestController extends Controller
     public function unprotectedpost(){
         error_log("unprotectedpost alled");
         return "unprotectedpost call werkt";
+    }
+
+    public function testsig(){
+        $data = User::find('4')->documents;
+        foreach ($data as $dat) {
+            $sig = $data->signature;
+            error_log(json_encode($sig));
+        }
+
+        echo $data;
     }
 }

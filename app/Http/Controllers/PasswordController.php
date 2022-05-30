@@ -13,6 +13,7 @@ use Symfony\Component\Mime\Message;
 
 class PasswordController extends Controller
 {
+    // send a a password reset link to email.
     public function reset(Request $request)
     {
         $validator = Validator::make($request->all(), [
