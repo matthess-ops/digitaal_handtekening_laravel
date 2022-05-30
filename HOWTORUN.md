@@ -1,3 +1,4 @@
+- this is the backend of digitale handtekening project, front can be found here https://github.com/matthess-ops/digitaal_document_vue, see  HOWTORUN.md for more information
 - use .env.example as env
 - composer install
 - npm install
