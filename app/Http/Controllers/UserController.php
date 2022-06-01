@@ -36,7 +36,7 @@ class UserController extends Controller
 
         $checkAdmin = auth('sanctum')->user()->is_admin;
         if ($checkAdmin == true) {
-            $users = User::where('firstname', 'LIKE', '%' . $searchterm . '%')->orderBy('firstname')->get();
+            $users = User::where('is_admin', 'like', false)->where('firstname', 'LIKE', '%' . $searchterm . '%')->orderBy('firstname')->get();
             return response()->json([
                 'status'        => 'success',
                 'data' =>   $users,
